@@ -44,65 +44,26 @@ end
 -- =====================
 -- Smooth Move
 -- =====================
--- ahbbdmn.lua — versi lengkap siap timpa
-
--- Variabel kontrol
--- ahbbdmn.lua — versi full auto walk stabil
-
-local running = false
-local speed = 20 -- bisa disesuaikan
-local moveDelay = 0.2 -- delay antar titik
-
--- Helper HumanoidRootPart
+local running=false
+local speed=50
 local function getHRP()
-    local char = player.Character or player.CharacterAdded:Wait()
+    local char=player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("HumanoidRootPart")
 end
-
--- Helper Humanoid
-local function getHumanoid()
-    local char = player.Character or player.CharacterAdded:Wait()
-    return char:WaitForChild("Humanoid")
-end
-
--- Fungsi playTrack natural
 local function playTrack(track)
-    if not track or #track < 2 then return end
-    local hrp = getHRP()
-    local humanoid = getHumanoid()
-
-    for i = 1, #track-1 do
+    if not track or #track<2 then return end
+    local hrp=getHRP()
+    for i=1,#track-1 do
         if not running then break end
-        local startPos, endPos = track[i], track[i+1]
-        local distance = (endPos - startPos).Magnitude
-        local heightDiff = math.abs(endPos.Y - startPos.Y)
-
-        if heightDiff > 5 then
-            -- kalau tinggi → pakai MoveTo supaya aman
-            humanoid:MoveTo(endPos)
-            humanoid.MoveToFinished:Wait(5)
-        else
-            -- kalau datar → tween biar smooth
-            local duration = distance / speed
-            local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(endPos)})
-            tween:Play()
-            tween.Completed:Wait()
-        end
-
-        task.wait(moveDelay)
+        local startPos,endPos=track[i],track[i+1]
+        local distance=(endPos-startPos).Magnitude
+        local duration=distance/speed
+        local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(endPos) * CFrame.Angles(0, math.rad(180), 0)})
+        tween:Play()
+        tween.Completed:Wait()
     end
 end
 
--- Start / Stop auto walk
-local function startAutoWalk(track)
-    running = true
-    playTrack(track)
-    running = false
-end
-
-local function stopAutoWalk()
-    running = false
-end
 -- =====================
 -- GUI Setup in CoreGui
 -- =====================
