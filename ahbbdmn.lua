@@ -45,7 +45,7 @@ end
 -- Smooth Move
 -- =====================
 local running = false
-local speed = 50
+local speed = 16 -- default biar ga terlalu ngebut
 
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
@@ -55,20 +55,16 @@ end
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
-    for i = 1, #track - 1 do
+    for i = 1, #track-1 do
         if not running then break end
         local startPos, endPos = track[i], track[i+1]
-
-        -- Hitung arah hadap
-        local direction = (endPos - startPos).Unit
-        local lookCFrame = CFrame.new(endPos, endPos + direction)
-
         local distance = (endPos - startPos).Magnitude
         local duration = distance / speed
-
-        local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
-            CFrame = lookCFrame
-        })
+        local tween = TweenService:Create(
+            hrp,
+            TweenInfo.new(duration, Enum.EasingStyle.Linear),
+            {CFrame = CFrame.new(endPos)}
+        )
         tween:Play()
         tween.Completed:Wait()
     end
