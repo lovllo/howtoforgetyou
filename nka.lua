@@ -45,7 +45,7 @@ end
 -- Smooth Move
 -- =====================
 local running=false
-local speed=90
+local speed=50
 local function getHRP()
     local char=player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("HumanoidRootPart")
