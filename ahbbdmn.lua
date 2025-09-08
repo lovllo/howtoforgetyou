@@ -47,46 +47,53 @@ end
 -- ahbbdmn.lua — versi lengkap siap timpa
 
 -- Variabel kontrol
-local running = false
-local speed = 20 -- bisa diubah sesuai kebutuhan
+-- ahbbdmn.lua — versi full auto walk stabil
 
--- Helper untuk dapat HumanoidRootPart
+local running = false
+local speed = 20 -- bisa disesuaikan
+local moveDelay = 0.2 -- delay antar titik
+
+-- Helper HumanoidRootPart
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("HumanoidRootPart")
 end
 
--- Helper untuk dapat Humanoid
+-- Helper Humanoid
 local function getHumanoid()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("Humanoid")
 end
 
--- Fungsi playTrack baru, natural dan stabil
+-- Fungsi playTrack natural
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
     local humanoid = getHumanoid()
 
-    for i = 1, #track do
+    for i = 1, #track-1 do
         if not running then break end
-        local point = track[i]
+        local startPos, endPos = track[i], track[i+1]
+        local distance = (endPos - startPos).Magnitude
+        local heightDiff = math.abs(endPos.Y - startPos.Y)
 
-        -- MoveTo ke titik
-        humanoid:MoveTo(point)
-
-        -- Tunggu sampai sampai atau timeout (biar ga stuck/geter)
-        local reached = humanoid.MoveToFinished:Wait(5)
-        if not reached then
-            -- Kalau timeout, langsung paksa pindah HRP ke titik biar lanjut
-            hrp.CFrame = CFrame.new(point)
+        if heightDiff > 5 then
+            -- kalau tinggi → pakai MoveTo supaya aman
+            humanoid:MoveTo(endPos)
+            humanoid.MoveToFinished:Wait(5)
+        else
+            -- kalau datar → tween biar smooth
+            local duration = distance / speed
+            local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(endPos)})
+            tween:Play()
+            tween.Completed:Wait()
         end
 
-        task.wait(0.2) -- delay biar gerakan smooth
+        task.wait(moveDelay)
     end
 end
 
--- Fungsi start/stop auto walk
+-- Start / Stop auto walk
 local function startAutoWalk(track)
     running = true
     playTrack(track)
@@ -96,7 +103,6 @@ end
 local function stopAutoWalk()
     running = false
 end
-
 -- =====================
 -- GUI Setup in CoreGui
 -- =====================
