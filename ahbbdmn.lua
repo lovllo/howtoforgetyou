@@ -45,28 +45,27 @@ end
 -- Smooth Move
 -- =====================
 local running = false
-local speed = 16 -- default biar ga terlalu ngebut
+local speed = 16 -- ini sama kayak default WalkSpeed player
 
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("HumanoidRootPart")
 end
 
+local function getHumanoid()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("Humanoid")
+end
+
+-- Versi natural jalan pakai MoveTo
 local function playTrack(track)
     if not track or #track < 2 then return end
-    local hrp = getHRP()
-    for i = 1, #track-1 do
+    local humanoid = getHumanoid()
+    for i = 1, #track do
         if not running then break end
-        local startPos, endPos = track[i], track[i+1]
-        local distance = (endPos - startPos).Magnitude
-        local duration = distance / speed
-        local tween = TweenService:Create(
-            hrp,
-            TweenInfo.new(duration, Enum.EasingStyle.Linear),
-            {CFrame = CFrame.new(endPos)}
-        )
-        tween:Play()
-        tween.Completed:Wait()
+        humanoid:MoveTo(track[i])
+        humanoid.MoveToFinished:Wait() -- tunggu sampai beneran sampai titik
+        task.wait(0.1) -- delay dikit biar ga kaku
     end
 end
 
