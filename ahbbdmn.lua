@@ -58,18 +58,17 @@ local function playTrack(track)
     for i = 1, #track - 1 do
         if not running then break end
         local startPos, endPos = track[i], track[i+1]
+
+        -- Hitung arah hadap
+        local direction = (endPos - startPos).Unit
+        local lookCFrame = CFrame.new(endPos, endPos + direction)
+
         local distance = (endPos - startPos).Magnitude
         local duration = distance / speed
 
-        -- ganti ini biar hadap ke tujuan
-        local targetCFrame = CFrame.lookAt(endPos, endPos + (endPos - startPos))
-
-        local tween = TweenService:Create(
-            hrp,
-            TweenInfo.new(duration, Enum.EasingStyle.Linear),
-            {CFrame = targetCFrame}
-        )
-
+        local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+            CFrame = lookCFrame
+        })
         tween:Play()
         tween.Completed:Wait()
     end
