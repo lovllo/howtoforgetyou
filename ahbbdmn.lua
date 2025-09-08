@@ -44,67 +44,57 @@ end
 -- =====================
 -- Smooth Move
 -- =====================
-local running = false
-local speed = 20 -- coba dulu segini biar ga slowmo tapi ga terlalu ngebut
+-- ahbbdmn.lua — versi lengkap siap timpa
 
+-- Variabel kontrol
+local running = false
+local speed = 20 -- bisa diubah sesuai kebutuhan
+
+-- Helper untuk dapat HumanoidRootPart
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("HumanoidRootPart")
 end
 
+-- Helper untuk dapat Humanoid
 local function getHumanoid()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("Humanoid")
 end
 
+-- Fungsi playTrack baru, natural dan stabil
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
     local humanoid = getHumanoid()
 
-    for i = 1, #track-1 do
+    for i = 1, #track do
         if not running then break end
+        local point = track[i]
 
-        local startPos, endPos = track[i], track[i+1]
-        local distance = (endPos - startPos).Magnitude
-        local heightDiff = math.abs(endPos.Y - startPos.Y)
+        -- MoveTo ke titik
+        humanoid:MoveTo(point)
 
-        if heightDiff > 8 then
-            -- kalo tanjakan/curam → jalan normal
-            humanoid:MoveTo(endPos)
-            humanoid.MoveToFinished:Wait()
-        else
-            -- kalo datar → tween (biar halus)
-            local duration = distance / speed
-            local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(endPos)})
-            tween:Play()
-            tween.Completed:Wait()
+        -- Tunggu sampai sampai atau timeout (biar ga stuck/geter)
+        local reached = humanoid.MoveToFinished:Wait(5)
+        if not reached then
+            -- Kalau timeout, langsung paksa pindah HRP ke titik biar lanjut
+            hrp.CFrame = CFrame.new(point)
         end
 
-        task.wait(0.1) -- delay dikit biar ga bug
+        task.wait(0.2) -- delay biar gerakan smooth
     end
 end
 
--- Versi natural jalan pakai MoveTo
-local function playTrack(track)
-    if not track or #track < 2 then return end
-    local humanoid = getHumanoid()
+-- Fungsi start/stop auto walk
+local function startAutoWalk(track)
+    running = true
+    playTrack(track)
+    running = false
+end
 
-    for i = 1, #track do
-        if not running then break end
-
-        local point = track[i]
-        humanoid:MoveTo(point)
-
-        -- tunggu sampai sampai atau timeout (biar ga stuck/geter)
-        local reached = humanoid.MoveToFinished:Wait(5)
-        if not reached then
-            -- kalau timeout, langsung paksa pindah HRP ke titik biar lanjut
-            getHRP().CFrame = CFrame.new(point)
-        end
-
-        task.wait(0.2) -- kasih delay biar ga kaku
-    end
+local function stopAutoWalk()
+    running = false
 end
 
 -- =====================
