@@ -45,7 +45,7 @@ end
 -- Smooth Move
 -- =====================
 local running = false
-local speed = 16 -- ini sama kayak default WalkSpeed player
+local speed = 16 -- sama dengan WalkSpeed default player
 
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
@@ -61,11 +61,21 @@ end
 local function playTrack(track)
     if not track or #track < 2 then return end
     local humanoid = getHumanoid()
+
     for i = 1, #track do
         if not running then break end
-        humanoid:MoveTo(track[i])
-        humanoid.MoveToFinished:Wait() -- tunggu sampai beneran sampai titik
-        task.wait(0.1) -- delay dikit biar ga kaku
+
+        local point = track[i]
+        humanoid:MoveTo(point)
+
+        -- tunggu sampai sampai atau timeout (biar ga stuck/geter)
+        local reached = humanoid.MoveToFinished:Wait(5)
+        if not reached then
+            -- kalau timeout, langsung paksa pindah HRP ke titik biar lanjut
+            getHRP().CFrame = CFrame.new(point)
+        end
+
+        task.wait(0.2) -- kasih delay biar ga kaku
     end
 end
 
