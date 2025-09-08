@@ -109,14 +109,14 @@ if not CloseBtn then
     CloseBtn.TextScaled = true
 end
 
--- Mini Fyy
+-- Mini Fox
 local MiniBtn = ScreenGui:FindFirstChild("MiniBtn")
 if not MiniBtn then
     MiniBtn = Instance.new("TextButton",ScreenGui)
     MiniBtn.Name="MiniBtn"
     MiniBtn.Size = UDim2.new(0,50,0,50)
     MiniBtn.Position = UDim2.new(0,50,0,50)
-    MiniBtn.Text = "Fyy"
+    MiniBtn.Text = "Fox"
     MiniBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
     MiniBtn.TextColor3 = Color3.fromRGB(180,180,180)
     MiniBtn.TextScaled = true
