@@ -45,7 +45,7 @@ end
 -- Smooth Move
 -- =====================
 local running = false
-local speed = 16 -- sama dengan WalkSpeed default player
+local speed = 20 -- coba dulu segini biar ga slowmo tapi ga terlalu ngebut
 
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
@@ -55,6 +55,34 @@ end
 local function getHumanoid()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("Humanoid")
+end
+
+local function playTrack(track)
+    if not track or #track < 2 then return end
+    local hrp = getHRP()
+    local humanoid = getHumanoid()
+
+    for i = 1, #track-1 do
+        if not running then break end
+
+        local startPos, endPos = track[i], track[i+1]
+        local distance = (endPos - startPos).Magnitude
+        local heightDiff = math.abs(endPos.Y - startPos.Y)
+
+        if heightDiff > 8 then
+            -- kalo tanjakan/curam → jalan normal
+            humanoid:MoveTo(endPos)
+            humanoid.MoveToFinished:Wait()
+        else
+            -- kalo datar → tween (biar halus)
+            local duration = distance / speed
+            local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(endPos)})
+            tween:Play()
+            tween.Completed:Wait()
+        end
+
+        task.wait(0.1) -- delay dikit biar ga bug
+    end
 end
 
 -- Versi natural jalan pakai MoveTo
