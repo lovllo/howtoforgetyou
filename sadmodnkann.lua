@@ -44,10 +44,11 @@ local function getHRP()
 end
 
 -- Replay function
+local skipPoints = 15
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
-    for i = 1, #track do
+    for i = 1, #track, skipPoints do
         if not running then break end
         hrp.CFrame = CFrame.new(track[i])
         task.wait(speed)
