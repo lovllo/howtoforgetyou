@@ -44,14 +44,51 @@ local function getHRP()
 end
 
 -- Replay function
-local skipPoints = 10  -- 
+-- ✅ daftar checkpoints (dari titik terakhir yg kamu kasih)
+local checkpoints = {
+    Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422), -- CP1
+    Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469), -- CP2
+    Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438), -- CP3
+    Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938), -- CP4
+    Vector3.new(924.6644287109375, 101.67333221435547, 279.9154968261719), -- CP5
+    Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438) -- CP6
+}
+
+-- ⚡ setting skip
+local skipPoints = 10   -- skip gede buat ngebut
+local safeSkip = 2      -- skip kecil biar CP ga kelewat
+local nearCPDist = 20   -- radius aman (20 studs sekitar CP)
+
+-- ✅ fungsi cek apakah deket CP
+local function isNearCheckpoint(pos)
+    for _, cp in ipairs(checkpoints) do
+        if (pos - cp).Magnitude <= nearCPDist then
+            return true
+        end
+    end
+    return false
+end
+
+-- 🚀 fungsi jalanin track (versi adaptif)
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
-    for i = 1, #track, skipPoints do
+    local i = 1
+    while i <= #track do
         if not running then break end
+
+        -- default skip gede
+        local step = skipPoints
+
+        -- kalau deket CP → ganti skip kecil
+        if isNearCheckpoint(track[i]) then
+            step = safeSkip
+        end
+
         hrp.CFrame = CFrame.new(track[i])
         task.wait(speed)
+
+        i = i + step
     end
 end
 
