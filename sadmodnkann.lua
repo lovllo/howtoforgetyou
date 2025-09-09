@@ -44,7 +44,7 @@ local function getHRP()
 end
 
 -- Replay function
-local skipPoints = 41
+local skipPoints = 90
 local function playTrack(track)
     if not track or #track < 2 then return end
     local hrp = getHRP()
