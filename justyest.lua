@@ -140,7 +140,22 @@ stopBtn.TextScaled = true
 stopBtn.MouseButton1Click:Connect(function()
     running = false
 end)
+-- Buat Tombol
+local button = Instance.new("TextButton")
+button.Name = "AutoSummitButton"
+button.Size = UDim2.new(0, 150, 0, 50)
+button.Position = UDim2.new(0.5, -75, 0, 100) -- tengah atas
+button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextScaled = true
+button.Text = "AUTO SUMMIT"
+button.ZIndex = 2
+button.Parent = screenGui
 
+-- Tombol klik placeholder
+button.MouseButton1Click:Connect(function()
+    print("Tombol Auto Summit diklik!") -- nanti diganti loop Auto Summit
+end)
 -- Minimize Button (Fox Logo)
 local closeBtn = Instance.new("TextButton", Frame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -197,33 +212,5 @@ local function setupDrag(target)
         end
     end)
 end
--- =====================
--- Tombol track
--- =====================
-local autoSummitBtnRef
-local stopBtnRef
-for _,child in ipairs(Scroll:GetChildren()) do
-    if child:IsA("TextButton") then child:Destroy() end
-end
 
-for i,t in ipairs(trackData) do
-    local btn = Instance.new("TextButton",Scroll)
-    btn.Size = UDim2.new(0.95,0,0,40)
-    btn.Text = t.name
-    btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-    btn.TextColor3 = Color3.fromRGB(180,180,180)
-    btn.TextScaled = true
-    if t.name=="AUTO SUMMIT" then
-        autoSummitBtnRef = btn
-    else
-        btn.MouseButton1Click:Connect(function()
-            if running then return end
-            running=true
-            coroutine.wrap(function()
-                playTrack(t.points)
-                running=false
-            end)()
-        end)
-    end
-end
 setupDrag(Frame)  -- Dragging enabled for the whole frame
