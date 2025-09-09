@@ -159,7 +159,7 @@ local function autoSummit()
             if not running then return end
             playTrack(savedTracks[name])
             if not running then return end
-            task.wait(8) -- wait between tracks
+            task.wait(6) -- wait between tracks
         end
         task.wait(3) -- wait before respawn
         if not running then return end
@@ -204,7 +204,7 @@ closeBtn.MouseButton1Click:Connect(function()
     local logoBtn = Instance.new("TextButton", ScreenGui)
     logoBtn.Size = UDim2.new(0, 40, 0, 40)
     logoBtn.Position = UDim2.new(0, 50, 0, 50)
-    logoBtn.Text = "Fyy"
+    logoBtn.Text = "Fox"
     logoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     logoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     logoBtn.TextScaled = true
