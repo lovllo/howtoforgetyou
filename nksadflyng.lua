@@ -90,9 +90,6 @@ playTrack(cp4,4)
 playTrack(cp5,5) -- ✅ special skip 1 pelan CP5
 playTrack(cp6,6)
 
-   end
-end
-
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MT_Arunika"
