@@ -1,28 +1,52 @@
--- // ANTI AFK TOGGLE (UI Button)
+-- // ANTI AFK SCRIPT (FULL STANDALONE)
+-- // By lovllo
+-- // Fitur: Toggle ON/OFF biar ga kena kick AFK
+
+--== [ Rayfield Loader ] ==--
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Anti AFK Script",
+    LoadingTitle = "Loading Anti AFK...",
+    LoadingSubtitle = "by lovllo",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+local Tab = Window:CreateTab("Main", 4483362458) -- Ikon tab
+
+--== [ Anti AFK Logic ] ==--
 local vu = game:GetService("VirtualUser")
 local antiAfkEnabled = false
 
-CreateMenuToggle(miscTab, "Anti AFK", false, function(Value)
-    antiAfkEnabled = Value
-    if antiAfkEnabled then
-        Rayfield:Notify({
-            Title = "Anti AFK",
-            Content = "✅ Anti AFK Activated",
-            Duration = 2
-        })
+local Toggle = Tab:CreateToggle({
+    Name = "Anti AFK",
+    CurrentValue = false,
+    Flag = "AntiAFKToggle",
+    Callback = function(Value)
+        antiAfkEnabled = Value
 
-        task.spawn(function()
-            while antiAfkEnabled do
-                task.wait(60)
-                vu:CaptureController()
-                vu:ClickButton2(Vector2.new())
-            end
-        end)
-    else
-        Rayfield:Notify({
-            Title = "Anti AFK",
-            Content = "❌ Anti AFK Deactivated",
-            Duration = 2
-        })
-    end
-end)
+        if antiAfkEnabled then
+            Rayfield:Notify({
+                Title = "Anti AFK",
+                Content = "✅ Activated",
+                Duration = 3
+            })
+
+            task.spawn(function()
+                while antiAfkEnabled do
+                    task.wait(60) -- setiap 60 detik
+                    vu:CaptureController()
+                    vu:ClickButton2(Vector2.new())
+                end
+            end)
+        else
+            Rayfield:Notify({
+                Title = "Anti AFK",
+                Content = "❌ Deactivated",
+                Duration = 3
+            })
+        end
+    end,
+})
