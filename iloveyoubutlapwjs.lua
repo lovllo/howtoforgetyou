@@ -131,22 +131,28 @@ autoBtn.BackgroundColor3 = Color3.fromRGB(0, 60, 100)
 autoBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
 autoBtn.TextScaled = true
 
-autoBtn.MouseButton1Click:Connect(function()
+-- Auto Summit logic
+local function autoSummit()
     if running then return end
     running = true
-    coroutine.wrap(function()
-        while running do
-            for _, name in ipairs(orderedTrackNames) do
-                if not running then break end
-                playTrack(savedTracks[name])
-                if not running then break end 
-                task.wait(6) -- wait between tracks       
-            end
-            if running then
-                respawnPlayer()
-                task.wait(2) -- jeda respawn
-            end
+    while running do
+        for _, name in ipairs(orderedTrackNames) do
+            if not running then return end
+            playTrack(savedTracks[name])
+            if not running then return end
+            task.wait(6) -- wait between tracks
         end
+        task.wait(2) -- wait before respawn
+        if not running then return end
+        respawnPlayer()
+        task.wait(2) -- wait for character to load
+    end
+end
+
+autoBtn.MouseButton1Click:Connect(function()
+    if running then return end
+    coroutine.wrap(function()
+        autoSummit()
         running = false
     end)()
 end)
