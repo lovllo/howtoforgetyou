@@ -44,53 +44,62 @@ local function getHRP()
 end
 
 -- Replay function
--- ✅ daftar checkpoints (dari titik terakhir yg kamu kasih)
-local checkpoints = {
-    Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422), -- CP1
-    Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469), -- CP2
-    Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438), -- CP3
-    Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938), -- CP4
-    Vector3.new(924.6644287109375, 101.67333221435547, 279.9154968261719), -- CP5
-    Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438) -- CP6
+-- ✅ daftar CP
+local cp1 = {
+    Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422)
+}
+local cp2 = {
+    Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469)
+}
+local cp3 = {
+    Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438)
+}
+local cp4 = {
+    Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938)
+}
+local cp5 = {
+    Vector3.new(924.6644287109375, 101.67333221435547, 279.9154968261719)
+}
+local cp6 = {
+    Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438)
 }
 
--- ⚡ setting skip
-local skipPoints = 40 -- skip gede buat ngebut
-local safeSkip = 1      -- skip kecil biar CP ga kelewat
-local nearCPDist = 200  -- radius aman (20 studs sekitar CP)
+-- gabung semua CP ke list
+local tracks = {cp1, cp2, cp3, cp4, cp5, cp6}
 
--- ✅ fungsi cek apakah deket CP
-local function isNearCheckpoint(pos)
-    for _, cp in ipairs(checkpoints) do
-        if (pos - cp).Magnitude <= nearCPDist then
-            return true
-        end
-    end
-    return false
-end
+-- ⚡ default skip
+local defaultSkip = 20
+local specialSkip = {
+    [5] = 1 -- pas jalur menuju CP5, pakai skip 1
+}
 
--- 🚀 fungsi jalanin track (versi adaptif)
-local function playTrack(track)
-    if not track or #track < 2 then return end
+-- 🚀 playTrack adaptif
+local function playTrack(track, cpIndex)
+    if not track or #track < 1 then return end
     local hrp = getHRP()
     local i = 1
     while i <= #track do
         if not running then break end
 
-        -- default skip gede
-        local step = skipPoints
-
-        -- kalau deket CP → ganti skip kecil
-        if isNearCheckpoint(track[i]) then
-            step = safeSkip
+        local step = defaultSkip
+        if specialSkip[cpIndex] then
+            step = specialSkip[cpIndex]
         end
 
         hrp.CFrame = CFrame.new(track[i])
-        task.wait(speed)
+        task.wait(speed) -- pakai speed dari script asli kamu
 
         i = i + step
     end
 end
+
+-- ✅ contoh pemanggilan
+-- playTrack(cp1, 1)
+-- playTrack(cp2, 2)
+-- playTrack(cp3, 3)
+-- playTrack(cp4, 4)
+-- playTrack(cp5, 5)  --> skip 1
+-- playTrack(cp6, 6)
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
