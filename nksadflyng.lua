@@ -44,67 +44,26 @@ local function getHRP()
 end
 
 -- Replay function-- 
--- ✅ daftar checkpoints
-local cp1 = {
-    Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422)
-}
-local cp2 = {
-    Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469)
-}
-local cp3 = {
-    Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438)
-}
-local cp4 = {
-    Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938)
-}
--- ⚡ CP5 load dari JSON online
-local HttpService = game:GetService("HttpService")
+-- ✅ Titik akhir CP1-4 & CP6
+local cp1 = { Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422) }
+local cp2 = { Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469) }
+local cp3 = { Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438) }
+local cp4 = { Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938) }
+local cp6 = { Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438) }
+
+-- ⚡ Skip
+local skipPoints = 20
+local specialSkip = { [5] = 1 } -- CP5 skip 1
+
+-- ✅ Load CP5 detail dari JSON
 local cp5Json = game:HttpGet("https://raw.githubusercontent.com/fyybisnis4-gif/Fyy/refs/heads/main/CP4.json")
 local cp5Data = HttpService:JSONDecode(cp5Json)
-
 local cp5 = {}
 for _, v in ipairs(cp5Data) do
     table.insert(cp5, Vector3.new(v[1], v[2], v[3]))
 end
 
-local cp6 = {
-    Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438)
-}
-
--- gabung semua CP
-local checkpoints = {cp1, cp2, cp3, cp4, cp5, cp6}
-
--- ⚡ skip setting
-local skipPoints = 20   -- skip default (ngebut)
-local safeSkip   = 2    -- skip kecil kalau radius dekat
-local nearCPDist = 40   -- radius aman untuk skip 20
-local specialSkip = {
-    [5] = 1 -- CP5 wajib skip 1
-}
-
--- ✅ fungsi cek radius
-local function isNearCheckpoint(pos)
-    for _, cp in ipairs(checkpoints) do
-        local target = cp[1]
-        if (pos - target).Magnitude <= nearCPDist then
-            return true
-        end
-    end
-    return false
-end
-
--- ✅ fungsi cari index CP dari vector
-local function getCheckpointIndex(vec)
-    for i, cp in ipairs(checkpoints) do
-        local target = cp[1]
-        if (vec - target).Magnitude <= 1 then
-            return i
-        end
-    end
-    return nil
-end
-
--- 🚀 fungsi jalanin track
+-- 🚀 Fungsi jalanin track
 local function playTrack(track, cpIndex)
     if not track or #track < 1 then return end
     local hrp = getHRP()
@@ -113,19 +72,12 @@ local function playTrack(track, cpIndex)
         if not running then break end
 
         local step = skipPoints
-
-        -- cari index CP kalau ga dikasih
-        local idx = cpIndex or getCheckpointIndex(track[i])
-
-        if idx and specialSkip[idx] then
-            step = specialSkip[idx]
-        elseif isNearCheckpoint(track[i]) then
-            step = safeSkip
+        if cpIndex and specialSkip[cpIndex] then
+            step = specialSkip[cpIndex]
         end
 
         hrp.CFrame = CFrame.new(track[i])
         task.wait(speed)
-
         i = i + step
     end
 end
