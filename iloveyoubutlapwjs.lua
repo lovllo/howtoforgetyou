@@ -136,19 +136,27 @@ local function autoSummit()
     if running then return end
     running = true
     while running do
+        -- jalankan jalur normal sampai summit
         for _, name in ipairs(orderedTrackNames) do
             if not running then return end
             playTrack(savedTracks[name])
             if not running then return end
-            task.wait(6) -- wait between tracks
+            task.wait(6)
         end
-        task.wait(2) -- wait before respawn
+
+        -- selesai summit → respawn dulu
+        task.wait(2)
         if not running then return end
         respawnPlayer()
-        task.wait(2) -- wait for character to load
+        task.wait(2)
+
+        -- setelah respawn → langsung ke Basecamp
+        if savedTracks["BC - 1"] then
+            playTrack(savedTracks["BC - 1"])
+            task.wait(6)
+        end
     end
 end
-
 autoBtn.MouseButton1Click:Connect(function()
     if running then return end
     coroutine.wrap(function()
