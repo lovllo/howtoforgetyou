@@ -1,52 +1,55 @@
--- // ANTI AFK SCRIPT (FULL STANDALONE)
--- // By lovllo
--- // Fitur: Toggle ON/OFF biar ga kena kick AFK
+-- // ANTI AFK SCRIPT (Standalone, With Button, Persistent)
+-- // ON tetap aktif walau respawn
+-- // Dibuat khusus biar ga kena kick AFK
 
---== [ Rayfield Loader ] ==--
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-local Window = Rayfield:CreateWindow({
-    Name = "Anti AFK Script",
-    LoadingTitle = "Loading Anti AFK...",
-    LoadingSubtitle = "by lovllo",
-    ConfigurationSaving = {
-        Enabled = false
-    }
-})
-
-local Tab = Window:CreateTab("Main", 4483362458) -- Ikon tab
-
---== [ Anti AFK Logic ] ==--
 local vu = game:GetService("VirtualUser")
 local antiAfkEnabled = false
 
-local Toggle = Tab:CreateToggle({
-    Name = "Anti AFK",
-    CurrentValue = false,
-    Flag = "AntiAFKToggle",
-    Callback = function(Value)
-        antiAfkEnabled = Value
+--== [ UI Setup ] ==--
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AntiAFKGui"
+ScreenGui.ResetOnSpawn = false -- biar ga ilang saat respawn
+ScreenGui.Parent = game:GetService("CoreGui")
 
-        if antiAfkEnabled then
-            Rayfield:Notify({
-                Title = "Anti AFK",
-                Content = "✅ Activated",
-                Duration = 3
-            })
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Text = "Anti AFK: OFF"
+ToggleButton.Size = UDim2.new(0, 120, 0, 40)
+ToggleButton.Position = UDim2.new(0, 20, 0, 200)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 18
+ToggleButton.Visible = true
 
-            task.spawn(function()
-                while antiAfkEnabled do
-                    task.wait(60) -- setiap 60 detik
-                    vu:CaptureController()
-                    vu:ClickButton2(Vector2.new())
-                end
-            end)
-        else
-            Rayfield:Notify({
-                Title = "Anti AFK",
-                Content = "❌ Deactivated",
-                Duration = 3
-            })
+--== [ Logic Anti AFK ] ==--
+local function startAntiAfk()
+    task.spawn(function()
+        while antiAfkEnabled do
+            task.wait(60) -- setiap 60 detik
+            vu:CaptureController()
+            vu:ClickButton2(Vector2.new())
         end
-    end,
-})
+    end)
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    antiAfkEnabled = not antiAfkEnabled
+    if antiAfkEnabled then
+        ToggleButton.Text = "Anti AFK: ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        startAntiAfk()
+    else
+        ToggleButton.Text = "Anti AFK: OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    end
+end)
+
+--== [ Persist after Respawn ] ==--
+game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
+    if antiAfkEnabled then
+        startAntiAfk()
+    end
+end)
+
+print("✅ Anti AFK siap. Tombol tetap ada, dan kalau ON bakal lanjut walau respawn.")
