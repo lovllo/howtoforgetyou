@@ -134,20 +134,19 @@ autoBtn.TextScaled = true
 autoBtn.MouseButton1Click:Connect(function()
     if running then return end
     running = true
-    coroutine.wrap(function()
-        while running do
-            for _, name in ipairs(orderedTrackNames) do
-                if not running then break end
-                playTrack(savedTracks[name])
-            end
-            if running then
-                respawnPlayer()
-                task.wait(5) -- jeda respawn
-            end
+    while running do
+        for _, name in ipairs(orderedTrackNames) do
+            if not running then return end
+            playTrack(savedTracks[name])
+            if not running then return end
+            task.wait(6) -- wait between tracks
         end
-        running = false
-    end)()
-end)
+        task.wait(2) -- wait before respawn
+        if not running then return end
+        respawnPlayer()
+        task.wait(2) -- wait for character to load
+    end
+end
 
 -- STOP Button
 local stopBtn = Instance.new("TextButton", Frame)
