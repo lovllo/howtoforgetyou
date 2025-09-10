@@ -43,8 +43,7 @@ local function getHRP()
     return char:WaitForChild("HumanoidRootPart")
 end
 
--- Replay function
--- ✅ daftar checkpoints
+-- Replay function-- ✅ daftar checkpoints
 local cp1 = {
     Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422)
 }
@@ -57,9 +56,17 @@ local cp3 = {
 local cp4 = {
     Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938)
 }
-local cp5 = {
-    Vector3.new(924.6644287109375, 101.67333221435547, 279.9154968261719)
-}
+
+-- ⚡ CP5 load dari JSON online
+local HttpService = game:GetService("HttpService")
+local cp5Json = game:HttpGet("https://raw.githubusercontent.com/fyybisnis4-gif/Fyy/refs/heads/main/CP4.json")
+local cp5Data = HttpService:JSONDecode(cp5Json)
+
+local cp5 = {}
+for _, v in ipairs(cp5Data) do
+    table.insert(cp5, Vector3.new(v[1], v[2], v[3]))
+end
+
 local cp6 = {
     Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438)
 }
@@ -68,9 +75,9 @@ local cp6 = {
 local checkpoints = {cp1, cp2, cp3, cp4, cp5, cp6}
 
 -- ⚡ skip setting
-local skipPoints = 20   -- skip default (ngebut)
+local skipPoints = 20   -- default skip
 local safeSkip   = 2    -- skip kecil kalau radius dekat
-local nearCPDist = 35   -- radius aman untuk skip 20
+local nearCPDist = 35   -- radius aman
 local specialSkip = {
     [5] = 1 -- CP5 wajib skip 1
 }
@@ -111,7 +118,7 @@ local function playTrack(track, cpIndex)
         local idx = cpIndex or getCheckpointIndex(track[i])
 
         if idx and specialSkip[idx] then
-            step = specialSkip[idx]
+            step = specialSkip[idx] -- tetap 1 untuk CP5
         elseif isNearCheckpoint(track[i]) then
             step = safeSkip
         end
