@@ -55,7 +55,7 @@ local checkpoints = {
 }
 
 -- ⚡ setting skip
-local skipPoints = 45  -- skip gede buat ngebut
+local skipPoints = 30  -- skip gede buat ngebut
 local safeSkip = 2      -- skip kecil biar CP ga kelewat
 local nearCPDist = 5   -- radius aman (20 studs sekitar CP)
 
