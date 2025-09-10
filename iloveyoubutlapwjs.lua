@@ -148,12 +148,12 @@ local function autoSummit()
         task.wait(2)
         if not running then return end
         respawnPlayer()
-        task.wait(2)
+        task.wait(1)
 
         -- setelah respawn → langsung ke Basecamp
         if savedTracks["BC - 1"] then
             playTrack(savedTracks["BC - 1"])
-            task.wait(6)
+            task.wait(2)
         end
     end
 end
