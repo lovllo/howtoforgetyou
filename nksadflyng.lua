@@ -44,7 +44,7 @@ local function getHRP()
 end
 
 -- Replay function
---- ✅ daftar checkpoints
+-- ✅ daftar checkpoints
 local cp1 = {
     Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422)
 }
@@ -64,13 +64,13 @@ local cp6 = {
     Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438)
 }
 
--- gabung semua CP biar gampang loop
+-- gabung semua CP
 local checkpoints = {cp1, cp2, cp3, cp4, cp5, cp6}
 
 -- ⚡ skip setting
-local skipPoints = 20   -- default skip
-local safeSkip   = 2    -- skip kecil kalo radius dekat
-local nearCPDist = 40   -- radius aman
+local skipPoints = 20   -- skip default (ngebut)
+local safeSkip   = 2    -- skip kecil kalau radius dekat
+local nearCPDist = 35   -- radius aman untuk skip 20
 local specialSkip = {
     [5] = 1 -- CP5 wajib skip 1
 }
@@ -78,7 +78,7 @@ local specialSkip = {
 -- ✅ fungsi cek radius
 local function isNearCheckpoint(pos)
     for _, cp in ipairs(checkpoints) do
-        local target = cp[1] -- karena tiap cp cuma punya 1 titik
+        local target = cp[1]
         if (pos - target).Magnitude <= nearCPDist then
             return true
         end
@@ -86,7 +86,18 @@ local function isNearCheckpoint(pos)
     return false
 end
 
--- 🚀 fungsi jalanin track (pakai CP index)
+-- ✅ fungsi cari index CP dari vector
+local function getCheckpointIndex(vec)
+    for i, cp in ipairs(checkpoints) do
+        local target = cp[1]
+        if (vec - target).Magnitude <= 1 then
+            return i
+        end
+    end
+    return nil
+end
+
+-- 🚀 fungsi jalanin track
 local function playTrack(track, cpIndex)
     if not track or #track < 1 then return end
     local hrp = getHRP()
@@ -96,9 +107,11 @@ local function playTrack(track, cpIndex)
 
         local step = skipPoints
 
-        -- special skip lebih prioritas
-        if specialSkip[cpIndex] then
-            step = specialSkip[cpIndex]
+        -- cari index CP kalau ga dikasih
+        local idx = cpIndex or getCheckpointIndex(track[i])
+
+        if idx and specialSkip[idx] then
+            step = specialSkip[idx]
         elseif isNearCheckpoint(track[i]) then
             step = safeSkip
         end
