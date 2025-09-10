@@ -44,16 +44,16 @@ local function getHRP()
 end
 
 -- Replay function-- 
--- ✅ Titik akhir CP1-4 & CP6
+--- ✅ Titik akhir CP1-4 & CP6
 local cp1 = { Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422) }
 local cp2 = { Vector3.new(327.0382385253906, 89.79683685302735, -433.4064636230469) }
 local cp3 = { Vector3.new(476.0118103027344, 169.8149871826172, -939.1278686523438) }
 local cp4 = { Vector3.new(930.0757446289063, 133.3873748779297, -626.1312866210938) }
 local cp6 = { Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438) }
 
--- ⚡ Skip
-local skipPoints = 20
-local specialSkip = { [5] = 1 } -- CP5 skip 1
+-- ⚡ Skip settings
+local skipPoints = 20            -- default skip
+local specialSkip = { [5] = 1 }  -- CP5 skip 1 pelan
 
 -- ✅ Load CP5 detail dari JSON
 local cp5Json = game:HttpGet("https://raw.githubusercontent.com/fyybisnis4-gif/Fyy/refs/heads/main/CP4.json")
@@ -73,13 +73,24 @@ local function playTrack(track, cpIndex)
 
         local step = skipPoints
         if cpIndex and specialSkip[cpIndex] then
-            step = specialSkip[cpIndex]
+            step = specialSkip[cpIndex] -- Pasti skip 1 untuk CP5
         end
 
         hrp.CFrame = CFrame.new(track[i])
         task.wait(speed)
         i = i + step
     end
+end
+
+-- 🔹 Jalankan tiap CP manual
+playTrack(cp1,1)
+playTrack(cp2,2)
+playTrack(cp3,3)
+playTrack(cp4,4)
+playTrack(cp5,5) -- ✅ special skip 1 pelan CP5
+playTrack(cp6,6)
+
+   end
 end
 
 -- GUI Setup
