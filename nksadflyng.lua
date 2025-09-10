@@ -44,7 +44,7 @@ local function getHRP()
 end
 
 -- Replay function
--- ✅ daftar CP
+--- ✅ daftar checkpoints
 local cp1 = {
     Vector3.new(134.11962890625, 141.78271484375, -176.3054656982422)
 }
@@ -64,16 +64,29 @@ local cp6 = {
     Vector3.new(253.24855041503907, 325.2210998535156, 704.4208374023438)
 }
 
--- gabung semua CP ke list
-local tracks = {cp1, cp2, cp3, cp4, cp5, cp6}
+-- gabung semua CP biar gampang loop
+local checkpoints = {cp1, cp2, cp3, cp4, cp5, cp6}
 
--- ⚡ default skip
-local defaultSkip = 20
+-- ⚡ skip setting
+local skipPoints = 20   -- default skip
+local safeSkip   = 2    -- skip kecil kalo radius dekat
+local nearCPDist = 40   -- radius aman
 local specialSkip = {
-    [5] = 1 -- pas jalur menuju CP5, pakai skip 1
+    [5] = 1 -- CP5 wajib skip 1
 }
 
--- 🚀 playTrack adaptif
+-- ✅ fungsi cek radius
+local function isNearCheckpoint(pos)
+    for _, cp in ipairs(checkpoints) do
+        local target = cp[1] -- karena tiap cp cuma punya 1 titik
+        if (pos - target).Magnitude <= nearCPDist then
+            return true
+        end
+    end
+    return false
+end
+
+-- 🚀 fungsi jalanin track (pakai CP index)
 local function playTrack(track, cpIndex)
     if not track or #track < 1 then return end
     local hrp = getHRP()
@@ -81,25 +94,21 @@ local function playTrack(track, cpIndex)
     while i <= #track do
         if not running then break end
 
-        local step = defaultSkip
+        local step = skipPoints
+
+        -- special skip lebih prioritas
         if specialSkip[cpIndex] then
             step = specialSkip[cpIndex]
+        elseif isNearCheckpoint(track[i]) then
+            step = safeSkip
         end
 
         hrp.CFrame = CFrame.new(track[i])
-        task.wait(speed) -- pakai speed dari script asli kamu
+        task.wait(speed)
 
         i = i + step
     end
 end
-
--- ✅ contoh pemanggilan
--- playTrack(cp1, 1)
--- playTrack(cp2, 2)
--- playTrack(cp3, 3)
--- playTrack(cp4, 4)
--- playTrack(cp5, 5)  --> skip 1
--- playTrack(cp6, 6)
 
 -- GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
