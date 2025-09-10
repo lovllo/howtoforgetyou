@@ -55,9 +55,9 @@ local checkpoints = {
 }
 
 -- ⚡ setting skip
-local skipPoints = 20 -- skip gede buat ngebut
-local safeSkip = 2      -- skip kecil biar CP ga kelewat
-local nearCPDist = 50  -- radius aman (20 studs sekitar CP)
+local skipPoints = 30 -- skip gede buat ngebut
+local safeSkip = 1      -- skip kecil biar CP ga kelewat
+local nearCPDist = 190  -- radius aman (20 studs sekitar CP)
 
 -- ✅ fungsi cek apakah deket CP
 local function isNearCheckpoint(pos)
